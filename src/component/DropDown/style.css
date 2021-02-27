@@ -1,0 +1,40 @@
+.d-flex {
+  background: red;
+  display: flex;
+}
+.bg-red {
+  background-color: red;
+}
+.col {
+  flex-direction: column;
+}
+.row {
+  flex-direction: row;
+}
+
+.ai-center {
+  align-items: center;
+}
+
+.h-40 {
+  height: 40px;
+}
+
+.bg-yellow {
+  background-color: yellow;
+}
+.border-solid {
+  border: 3px black solid;
+}
+.border-none {
+  border: 0;
+  outline: none;
+}
+
+.jc-space-between {
+  justify-content: space-between;
+}
+
+.pd-10 {
+  padding: 10px;
+}
