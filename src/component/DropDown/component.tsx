@@ -8,7 +8,9 @@ constructor(props : any)
     super(props);
 this.state={
     placeholder : "Colours",
-    dropdownVisiblity: false
+    dropdownVisiblity: false,
+    searchQuery:"",
+    seletedItems:[]
 }
 }
 _handelDropDownvisiblity =()=> {
@@ -17,19 +19,20 @@ this.setState({ dropdownVisiblity:!dropdownVisiblity, placeholder: placeholder =
 console.log(this.state)
 }
 _renderDropDownVisiblity=()=>{
-    const {dropdownVisiblity} = this.state;
+    const {dropdownVisiblity,searchQuery} : any = this.state;
     if(!dropdownVisiblity)
     {
         return;
     }
-    return (<div className="bg-yellow pd-10">
+    return (<div className="bg-yellow pd-10 pos-absolute">
     <input type="checkbox"/>
     {
     this.colors.map((value,index)=>{
-        return <div className="d-flex jc-space-between ">
-            <div ><input type="checkbox"/></div>
+        if(value.match((new RegExp(searchQuery,'i'))))
+         return (<div className="d-flex jc-space-between ">
+            <div key={index} ><input value={value} onChange={this._handelCheckedItems}type="checkbox"/></div>
              <div>{value}</div>
-        </div>
+        </div>)
     }) 
     }
     <div>
@@ -40,12 +43,26 @@ _renderDropDownVisiblity=()=>{
 }
 
 _handelFocus=()=> {}
+_handelCheckedItems = (e : any)=> {
+    const {seletedItems}=this.state 
+if(e.target.checked)
+{
+    this.setState({seletedItems:[...seletedItems,e.target.value]})
+    return;
+}
+seletedItems.splice(seletedItems.indexOf(e.target.value),1);
+
+this.setState({seletedItems});
+
+
+
+}
 render(){
-const {dropdownVisiblity,placeholder}=this.state
+const {dropdownVisiblity,placeholder,searchQuery}=this.state
     return (
     <div  className="component d-flex col ai-center">
-    <div className="drop-down  bg-yellow border-solid" onBlur={ this._handelDropDownvisiblity} onFocus={this._handelDropDownvisiblity} >  
-        <input className="h-40 border-none"placeholder={placeholder} />
+    <div className="drop-down  bg-yellow border-solid"  onFocus={this._handelDropDownvisiblity} >  
+        <input value={searchQuery} className="h-40 border-none" onChange={(e) => this.setState({searchQuery: e.target.value})} placeholder={placeholder} />
         <img src={ArrowDown} alt="arrow down"/>
     </div>
     <div>

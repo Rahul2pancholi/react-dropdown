@@ -38,3 +38,7 @@
 .pd-10 {
   padding: 10px;
 }
+
+.pos-absolute {
+  position: absolute;
+}
