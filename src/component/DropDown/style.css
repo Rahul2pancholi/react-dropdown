@@ -1,6 +1,8 @@
 .d-flex {
-  background: red;
   display: flex;
+}
+.d-inline-block {
+  display: inline-block;
 }
 .bg-red {
   background-color: red;
@@ -20,11 +22,14 @@
   height: 40px;
 }
 
+.w-150 {
+  width: 150px;
+}
 .bg-yellow {
   background-color: yellow;
 }
 .border-solid {
-  border: 3px black solid;
+  border: 1px black solid;
 }
 .border-none {
   border: 0;
@@ -41,4 +46,40 @@
 
 .pos-absolute {
   position: absolute;
+}
+/* overflow h-100 */
+.overflow {
+  overflow: scroll;
+}
+.mx-h-100 {
+  max-height: 100px;
+}
+
+.button {
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.header {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.box-shadow {
+  box-shadow: 0px 7px 4px 1px rgb(184 184 184);
+}
+
+.input {
+  box-shadow: 0px -1px 4px 1px rgba(184, 184, 184, 1);
+  width: -webkit-fill-available;
+  outline: none;
+  border: none;
+}
+
+.dropdown {
+  box-shadow: 0px -1px 4px 1px rgba(184, 184, 184, 1);
+}
+.mg-top-2 {
+  margin-top: 2px;
 }

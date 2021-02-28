@@ -9,7 +9,7 @@ render(){
 
     return (
     <div >
-        <DropDown searchable={true} multiSelect={true} data={"data"}/>
+        <DropDown searchable={true} multiSelect={true} data={this.colors}/>
     </div>
 
     )

@@ -1,77 +1,190 @@
-import React,{Component} from 'react'
-import './style.css'
-import ArrowDown from "../../asset/icon/keyboard_arrow_down.svg"
-export default  class DropDown extends Component<any,any>{
-    colors : Array<string>=["red","yellow","green","blue"]
-constructor(props : any)
-{  
+import React, { Component } from "react";
+import "./style.css";
+import ArrowDown from "../../asset/icon/keyboard_arrow_down.svg";
+import { IState } from "./types";
+import DropDownItem from "./viewes/DropDownItem";
+
+const initialState: IState = {
+  placeholder: "Colors",
+  dropdownVisiblity: false,
+  searchQuery: "",
+  selectedItems: [],
+  dropDownInputValue: "",
+  filterItems: [],
+  actualItems: [],
+};
+
+export default class DropDown extends Component<any, IState> {
+  chekedObject: any;
+  constructor(props: any) {
     super(props);
-this.state={
-    placeholder : "Colours",
-    dropdownVisiblity: false,
-    searchQuery:"",
-    seletedItems:[]
-}
-}
-_handelDropDownvisiblity =()=> {
-    const {dropdownVisiblity,placeholder}=this.state 
-this.setState({ dropdownVisiblity:!dropdownVisiblity, placeholder: placeholder === ""? "Colours" : ""});
-console.log(this.state)
-}
-_renderDropDownVisiblity=()=>{
-    const {dropdownVisiblity,searchQuery} : any = this.state;
-    if(!dropdownVisiblity)
-    {
-        return;
+    this.state = initialState;
+  }
+
+  _handelDropDownvisiblity = (e: any) => {
+    const { dropdownVisiblity } = this.state;
+    this.setState({ dropdownVisiblity: !dropdownVisiblity });
+  };
+  _handelSelectAllInput = (e: any) => {
+    const { filterItems, selectedItems } = this.state;
+    if (e.target.checked) {
+      this.setState({ selectedItems: [...filterItems] });
+      return;
     }
-    return (<div className="bg-yellow pd-10 pos-absolute">
-    <input type="checkbox"/>
-    {
-    this.colors.map((value,index)=>{
-        if(value.match((new RegExp(searchQuery,'i'))))
-         return (<div className="d-flex jc-space-between ">
-            <div key={index} ><input value={value} onChange={this._handelCheckedItems}type="checkbox"/></div>
-             <div>{value}</div>
-        </div>)
-    }) 
+    selectedItems.length = 0;
+    this.setState({ selectedItems });
+  };
+
+  componentDidMount() {
+    const { data } = this.props;
+    if (!data) {
+      return;
     }
-    <div>
-        <button>clear</button>
-        <button>submit</button>
-    </div>
-    </div>) 
-}
+    this.setState({ filterItems: data, actualItems: data });
+  }
 
-_handelFocus=()=> {}
-_handelCheckedItems = (e : any)=> {
-    const {seletedItems}=this.state 
-if(e.target.checked)
-{
-    this.setState({seletedItems:[...seletedItems,e.target.value]})
-    return;
-}
-seletedItems.splice(seletedItems.indexOf(e.target.value),1);
+  _handelOnSearchInput = (e: any) => {
+    const { value } = e.target;
+    const { filterItems, actualItems, searchQuery } = this.state;
+    let filter: any = actualItems.filter((data, index) => {
+      if (data.match(new RegExp(value, "i"))) {
+        return true;
+      }
+    });
 
-this.setState({seletedItems});
+    this.setState({ searchQuery: value, filterItems: filter });
+  };
+  _renderDropDownVisiblity = () => {
+    const { searchable, data } = this.props;
+    const {
+      dropdownVisiblity,
+      searchQuery,
+      selectedItems,
+      filterItems,
+    } = this.state;
+    if (!dropdownVisiblity) {
+      return null;
+    }
 
-
-
-}
-render(){
-const {dropdownVisiblity,placeholder,searchQuery}=this.state
     return (
-    <div  className="component d-flex col ai-center">
-    <div className="drop-down  bg-yellow border-solid"  onFocus={this._handelDropDownvisiblity} >  
-        <input value={searchQuery} className="h-40 border-none" onChange={(e) => this.setState({searchQuery: e.target.value})} placeholder={placeholder} />
-        <img src={ArrowDown} alt="arrow down"/>
-    </div>
-    <div>
-{this._renderDropDownVisiblity()}
-    </div>
-   
-    </div>
+      <div className="d-flex  col pos-absolute box-shadow mg-top-2">
+        <div>
+          {searchable ? (
+            <div className="drop-down w-150" style={{ marginBottom: "3px" }}>
+              <input
+                value={searchQuery}
+                className="h-40 input"
+                onChange={this._handelOnSearchInput}
+                placeholder="Search"
+              />
+            </div>
+          ) : null}
+        </div>
 
-    )
-}
+        <div className="overflow mx-h-100">
+          <div style={{ marginRight: 20 }}>
+            <input
+              value={"All"}
+              onChange={this._handelSelectAllInput}
+              type="checkbox"
+            />
+          </div>
 
+          {filterItems.map((value: string, index: number) => {
+            return (
+              <DropDownItem
+                key={index}
+                label={value}
+                onChange={this._handelCheckedItems}
+                checked={selectedItems.indexOf(value) === -1 ? false : true}
+              />
+            );
+
+            return null;
+          })}
+        </div>
+        <div
+          style={{
+            placeSelf: "flex-end",
+            height: "60px",
+            paddingRight: "10px",
+          }}
+          className="d-flex ai-center"
+        >
+          <div
+            className="button"
+            style={{ marginRight: "15px", fontWeight: "bold" }}
+            onClick={this._handleClearButton}
+          >
+            Clear
+          </div>
+          <div
+            className="button"
+            style={{ marginLeft: "15px", color: "green", fontWeight: "bold" }}
+            onClick={this._handleSubmitbutton}
+          >
+            Submit
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  _handleClearButton = () => {
+    const { selectedItems } = this.state;
+    selectedItems.length = 0;
+    this.setState({ selectedItems });
+    return;
+  };
+
+  _handleSubmitbutton = () => {
+    const { selectedItems } = this.state;
+    let value = selectedItems.join("-");
+    this.setState({
+      placeholder: value ? "Colors - " + value : "Colors",
+      dropdownVisiblity: false,
+    });
+  };
+
+  _handelCheckedItems = (e: any) => {
+    let { selectedItems } = this.state;
+    const { multiSelect = true } = this.props;
+
+    console.log("_handelCheckedItems");
+    if (e.target.checked) {
+      selectedItems = multiSelect
+        ? [...selectedItems, e.target.value]
+        : [e.target.value];
+      this.setState({ selectedItems });
+      return;
+    }
+    selectedItems.splice(selectedItems.indexOf(e.target.value), 1);
+    this.setState({ selectedItems });
+  };
+
+  render() {
+    const { placeholder, searchQuery } = this.state;
+    return (
+      <div className="d-inline-block  border dropdown d-flex row">
+        <div
+          className="d-flex h-40 w-150 jc-space-between"
+          onClick={this._handelDropDownvisiblity}
+        >
+          <label
+            className="header"
+            style={{ alignItems: "center", alignSelf: "center" }}
+          >
+            {placeholder}
+          </label>
+          <img
+            style={{ alignItems: "center" }}
+            src={ArrowDown}
+            alt="arrow down"
+          />
+        </div>
+
+        {this._renderDropDownVisiblity()}
+      </div>
+    );
+  }
 }
